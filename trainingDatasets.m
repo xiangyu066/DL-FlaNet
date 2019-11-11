@@ -3,7 +3,7 @@ echo on
 %       trainingDatasets.m       
 %      ====================
 % CREATED: OCTOBER, 2019
-% MODIFIED: NOVEMBER 6, 2019
+% MODIFIED: NOVEMBER 11, 2019
 % EDITOR: X.Y. ZHUANG
 %
 % DESCRITION:  
@@ -36,7 +36,7 @@ if ~exist('trainingImages\nonFlagellated', 'dir')
 end
 
 %% Count the total number of flagellated and non-flagellated cell
-inputfolder= 'E:\Experiments\Deep learning\FlaNet\raw datasets\';
+inputfolder= 'C:\Users\XYZ\Google Drive\Colab Notebooks\FlaNet\raw datasets\';
 
 listing = dir(inputfolder);
 for nDir = 3:length(listing)
@@ -60,9 +60,9 @@ for nDir = 3:length(listing)
         
         switch nCase
             case 1
-                nCounts_Fla(nDir-2) = nCount*4;
+                nCounts_Fla(nDir-2) = nCount*4*2;
             case 2
-                nCounts_noFla(nDir-2) = nCount*4;
+                nCounts_noFla(nDir-2) = nCount*4*2;
         end
     end
 end
@@ -92,29 +92,35 @@ for nDir = 3:length(listing)
                 neworigina2 = imadjust(neworigina,[400,5000]/(2^16-1)); % unify the same intensity range
                 neworigina3 = uint8(255*double(neworigina2)./max(double(neworigina2(:))));
                 
-                for nAng = 0:3 % augmentation
-                    nCount = nCount+1;
-                    neworigina3 = imrotate(neworigina3,90*nAng);
+                for nflip = 1:2
                     
-                    switch nCase
-                        case 1
-                            if (nCount<=round(nCounts_Fla(nDir-2)*split_frac))
-                                outputdir = 'E:\Experiments\Deep learning\FlaNet\trainingDatasets\trainingImages\';
-                                outputfile = [outputdir,'Flagellated\',listing(nDir).name,'-flagellated',num2str(nCount),'.tif'];
-                            else
-                                outputdir = 'E:\Experiments\Deep learning\FlaNet\trainingDatasets\testImages\';
-                                outputfile = [outputdir,'Flagellated\',listing(nDir).name,'-flagellated',num2str(nCount),'.tif'];
-                            end
-                        case 2
-                            if (nCount<=round(nCounts_noFla(nDir-2)*split_frac))
-                                outputdir = 'E:\Experiments\Deep learning\FlaNet\trainingDatasets\trainingImages\';
-                                outputfile = [outputdir,'nonFlagellated\',listing(nDir).name,'-nonflagellated',num2str(nCount),'.tif'];
-                            else
-                                outputdir = 'E:\Experiments\Deep learning\FlaNet\trainingDatasets\testImages\';
-                                outputfile = [outputdir,'nonFlagellated\',listing(nDir).name,'-nonflagellated',num2str(nCount),'.tif'];
-                            end
+                    neworigina3 = flip(neworigina3);
+                    
+                    for nAng = 0:3 % augmentation
+                        
+                        nCount = nCount+1;
+                        neworigina3 = imrotate(neworigina3,90*nAng);
+                        
+                        switch nCase
+                            case 1
+                                if (nCount<=round(nCounts_Fla(nDir-2)*split_frac))
+                                    outputdir = 'C:\Users\XYZ\Google Drive\Colab Notebooks\FlaNet\trainingDatasets\trainingImages\';
+                                    outputfile = [outputdir,'Flagellated\',listing(nDir).name,'-flagellated',num2str(nCount),'.tif'];
+                                else
+                                    outputdir = 'C:\Users\XYZ\Google Drive\Colab Notebooks\FlaNet\trainingDatasets\testImages\';
+                                    outputfile = [outputdir,'Flagellated\',listing(nDir).name,'-flagellated',num2str(nCount),'.tif'];
+                                end
+                            case 2
+                                if (nCount<=round(nCounts_noFla(nDir-2)*split_frac))
+                                    outputdir = 'C:\Users\XYZ\Google Drive\Colab Notebooks\FlaNet\trainingDatasets\trainingImages\';
+                                    outputfile = [outputdir,'nonFlagellated\',listing(nDir).name,'-nonflagellated',num2str(nCount),'.tif'];
+                                else
+                                    outputdir = 'C:\Users\XYZ\Google Drive\Colab Notebooks\FlaNet\trainingDatasets\testImages\';
+                                    outputfile = [outputdir,'nonFlagellated\',listing(nDir).name,'-nonflagellated',num2str(nCount),'.tif'];
+                                end
+                        end
+                        imwrite(neworigina3,outputfile,'Compression','none');
                     end
-                    imwrite(neworigina3,outputfile,'Compression','none');
                 end
             end
         end
